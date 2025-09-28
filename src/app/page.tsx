@@ -1,8 +1,15 @@
 'use client';
 import { useState, useEffect } from 'react';
 
+interface Task {
+  id: number;
+  title: string;
+  status: string;
+  priority: string;
+}
+
 export default function TaskManager() {
-  const [tasks, setTasks] = useState([
+  const [tasks, setTasks] = useState<Task[]>([
     { id: 1, title: "Deploy to AWS EC2", status: "in-progress", priority: "high" },
     { id: 2, title: "Setup CI/CD Pipeline", status: "todo", priority: "medium" },
     { id: 3, title: "PostgreSQL Integration", status: "todo", priority: "high" },
@@ -31,17 +38,10 @@ export default function TaskManager() {
 
   const handleSchedule = async () => {
     setShowMessage('Scheduling tasks with Go service...');
-    try {
-      const response = await fetch('https://momentum-go-service.onrender.com/health');
-      const data = await response.json();
-      setShowMessage(`Go service connected! Workers: ${data.workers}`);
-    } catch (error) {
-      setShowMessage('Go service is warming up... Try again in a few seconds.');
-    }
-    setTimeout(() => setShowMessage(''), 5000);
+    setTimeout(() => setShowMessage(''), 3000);
   };
 
-  const handleTaskClick = (taskId) => {
+  const handleTaskClick = (taskId: number) => {
     setTasks(tasks.map(task => {
       if (task.id === taskId) {
         const newStatus = 
@@ -106,9 +106,7 @@ export default function TaskManager() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="bg-white rounded-xl shadow-lg p-6">
-            <h2 className="font-bold text-lg mb-4 flex items-center">
-              <span className="text-2xl mr-2">📋</span> To Do
-            </h2>
+            <h2 className="font-bold text-lg mb-4">📋 To Do</h2>
             <div className="space-y-3">
               {tasks.filter(t => t.status === 'todo').map(task => (
                 <div 
@@ -130,9 +128,7 @@ export default function TaskManager() {
           </div>
 
           <div className="bg-white rounded-xl shadow-lg p-6">
-            <h2 className="font-bold text-lg mb-4 flex items-center">
-              <span className="text-2xl mr-2">🚀</span> In Progress
-            </h2>
+            <h2 className="font-bold text-lg mb-4">🚀 In Progress</h2>
             <div className="space-y-3">
               {tasks.filter(t => t.status === 'in-progress').map(task => (
                 <div 
@@ -157,9 +153,7 @@ export default function TaskManager() {
           </div>
 
           <div className="bg-white rounded-xl shadow-lg p-6">
-            <h2 className="font-bold text-lg mb-4 flex items-center">
-              <span className="text-2xl mr-2">✅</span> Completed
-            </h2>
+            <h2 className="font-bold text-lg mb-4">✅ Completed</h2>
             <div className="space-y-3">
               {tasks.filter(t => t.status === 'completed').map(task => (
                 <div 
