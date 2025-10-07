@@ -1,7 +1,7 @@
 import { CognitoUserPool, CognitoUser, AuthenticationDetails, CognitoUserAttribute } from 'amazon-cognito-identity-js';
 
 const poolData = {
-  UserPoolId: 'us-east-1_L8ULzN14A',  // 正确的 User Pool ID
+  UserPoolId: 'us-east-1_B6UlZN14A',  // 正确的 User Pool ID
   ClientId: '6p193vmdenhm60oe4mgd45dkp1'
 };
 
