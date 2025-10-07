@@ -1,8 +1,8 @@
 import { CognitoUserPool, CognitoUser, AuthenticationDetails, CognitoUserAttribute } from 'amazon-cognito-identity-js';
 
 const poolData = {
-  UserPoolId: 'us-east-1_96ULZN14A',  // 从你的URL看到的新User Pool ID
-  ClientId: '6p193vmdenhm60oe4mgd45dkp1'  // 你的新Client ID
+  UserPoolId: 'us-east-1_L8ULzN14A',  // 正确的 User Pool ID
+  ClientId: '6p193vmdenhm60oe4mgd45dkp1'
 };
 
 const userPool = new CognitoUserPool(poolData);
