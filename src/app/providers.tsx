@@ -1,14 +1,12 @@
 'use client';
 import { Amplify } from 'aws-amplify';
 import { amplifyConfig } from '@/lib/amplifyConfig';
-import { useEffect } from 'react';
 
-Amplify.configure(amplifyConfig, { ssr: true });
+// 在客户端配置Amplify
+if (typeof window !== 'undefined') {
+  Amplify.configure(amplifyConfig);
+}
 
 export default function Providers({ children }: { children: React.ReactNode }) {
-  useEffect(() => {
-    Amplify.configure(amplifyConfig);
-  }, []);
-
   return <>{children}</>;
 }
