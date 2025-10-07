@@ -2,7 +2,7 @@ import { CognitoUserPool, CognitoUser, AuthenticationDetails, CognitoUserAttribu
 
 const poolData = {
   UserPoolId: 'us-east-1_uz1r1r',
-  ClientId: 'ponkeiq9o9rf448sl2kjbdo9g'
+  ClientId: '6lnsimgefo4nsg9s7g3m22tq7u'  // 新的Client ID，没有secret
 };
 
 const userPool = new CognitoUserPool(poolData);
