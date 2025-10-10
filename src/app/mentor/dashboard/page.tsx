@@ -13,6 +13,9 @@ export default function MentorDashboard() {
   const [profile, setProfile] = useState<any>(null);
   const [selectedMentee, setSelectedMentee] = useState<any>(null);
   const [menteeGoals, setMenteeGoals] = useState<any[]>([]);
+  const [showAddMentee, setShowAddMentee] = useState(false);
+  const [menteeEmail, setMenteeEmail] = useState('');
+  const [addMenteeError, setAddMenteeError] = useState('');
 
   useEffect(() => {
     loadData();
@@ -58,6 +61,50 @@ export default function MentorDashboard() {
     } catch (error) {
       console.error('Error loading data:', error);
       setLoading(false);
+    }
+  };
+
+  const handleAddMentee = async () => {
+    setAddMenteeError('');
+    
+    if (!menteeEmail.trim()) {
+      setAddMenteeError('Please enter a mentee email');
+      return;
+    }
+
+    try {
+      // First, find the user by email
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/search-by-email`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: menteeEmail })
+      });
+
+      const result = await response.json();
+
+      if (!result.success || !result.user) {
+        setAddMenteeError('No user found with this email. Please check the email address.');
+        return;
+      }
+
+      if (result.user.role !== 'student') {
+        setAddMenteeError('This user is not a student.');
+        return;
+      }
+
+      // Create relationship
+      const relationshipResult = await mentorAPI.createRelationship(user.id, result.user.user_id);
+
+      if (relationshipResult.success) {
+        setShowAddMentee(false);
+        setMenteeEmail('');
+        loadData();
+      } else {
+        setAddMenteeError(relationshipResult.error || 'Failed to add mentee');
+      }
+    } catch (error: any) {
+      console.error('Error adding mentee:', error);
+      setAddMenteeError(error.message || 'Failed to add mentee');
     }
   };
 
@@ -164,7 +211,15 @@ export default function MentorDashboard() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <div className="bg-white rounded-lg shadow">
             <div className="p-6 border-b border-gray-200">
-              <h3 className="text-xl font-bold text-gray-900">My Mentees</h3>
+              <div className="flex justify-between items-center">
+                <h3 className="text-xl font-bold text-gray-900">My Mentees</h3>
+                <button
+                  onClick={() => setShowAddMentee(true)}
+                  className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 text-sm"
+                >
+                  + Add Mentee
+                </button>
+              </div>
             </div>
             <div className="p-6">
               {mentees.length === 0 ? (
@@ -173,9 +228,15 @@ export default function MentorDashboard() {
                   <h3 className="text-xl font-semibold text-gray-900 mb-2">
                     No mentees yet
                   </h3>
-                  <p className="text-gray-600">
-                    Mentees will appear here when they are assigned to you
+                  <p className="text-gray-600 mb-4">
+                    Add students to start mentoring
                   </p>
+                  <button
+                    onClick={() => setShowAddMentee(true)}
+                    className="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+                  >
+                    Add Your First Mentee
+                  </button>
                 </div>
               ) : (
                 <div className="space-y-3">
@@ -283,6 +344,57 @@ export default function MentorDashboard() {
           </div>
         </div>
       </main>
+
+      {showAddMentee && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+            <h3 className="text-2xl font-bold text-gray-900 mb-4">Add Mentee</h3>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Student Email Address
+                </label>
+                <input
+                  type="email"
+                  value={menteeEmail}
+                  onChange={(e) => setMenteeEmail(e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  placeholder="student@example.com"
+                />
+                <p className="mt-2 text-xs text-gray-500">
+                  Enter the email address of the student you want to mentor
+                </p>
+              </div>
+
+              {addMenteeError && (
+                <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+                  <p className="text-red-600 text-sm">{addMenteeError}</p>
+                </div>
+              )}
+            </div>
+
+            <div className="flex justify-end space-x-4 mt-6">
+              <button
+                onClick={() => {
+                  setShowAddMentee(false);
+                  setMenteeEmail('');
+                  setAddMenteeError('');
+                }}
+                className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleAddMentee}
+                className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+              >
+                Add Mentee
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
