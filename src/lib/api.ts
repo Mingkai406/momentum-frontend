@@ -97,5 +97,14 @@ export const mentorAPI = {
       body: JSON.stringify({ goal_id: goalId, mentor_id: mentorId, feedback_text: feedbackText })
     });
     return response.json();
+  },
+
+  createRelationship: async (mentorId: string, menteeId: string) => {
+    const response = await fetch(`${API_URL}/api/mentor/relationship`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ mentor_id: mentorId, mentee_id: menteeId })
+    });
+    return response.json();
   }
 };
