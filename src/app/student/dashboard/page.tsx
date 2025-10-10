@@ -9,6 +9,7 @@ export default function StudentDashboard() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
+  const [userRole, setUserRole] = useState<string>('');
   const [goals, setGoals] = useState<any[]>([]);
   const [profile, setProfile] = useState<any>(null);
   const [showAddGoal, setShowAddGoal] = useState(false);
@@ -49,6 +50,7 @@ export default function StudentDashboard() {
 
             if (profileRes.success) {
               setProfile(profileRes);
+              setUserRole(profileRes.user.role);
             }
 
             if (goalsRes.success) {
@@ -118,9 +120,19 @@ export default function StudentDashboard() {
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
               <h1 className="text-2xl font-bold text-blue-600">Momentum</h1>
-              <span className="ml-4 text-sm text-gray-500">Student Dashboard</span>
+              <span className="ml-4 text-sm text-gray-500">
+                {userRole === 'mentor' ? 'My Personal Goals' : 'Student Dashboard'}
+              </span>
             </div>
             <div className="flex items-center space-x-4">
+              {userRole === 'mentor' && (
+                <button
+                  onClick={() => router.push('/mentor/dashboard')}
+                  className="px-4 py-2 text-sm text-purple-600 hover:text-purple-700 font-medium"
+                >
+                  ← Back to Mentor Dashboard
+                </button>
+              )}
               <span className="text-sm text-gray-600">{user?.email}</span>
               <button
                 onClick={handleLogout}
